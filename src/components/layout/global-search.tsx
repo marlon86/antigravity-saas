@@ -15,6 +15,18 @@ export function GlobalSearch() {
     const debouncedQuery = useDebounce(query, 300)
 
     useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault()
+                const input = document.getElementById('global-search-input')
+                input?.focus()
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [])
+
+    useEffect(() => {
         const performSearch = async () => {
             if (debouncedQuery.length < 2) {
                 setResults([])
@@ -52,9 +64,10 @@ export function GlobalSearch() {
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                 )}
                 <Input
+                    id="global-search-input"
                     type="search"
                     placeholder="Buscar transações, bancos..."
-                    className="w-full bg-zinc-50 pl-9 dark:bg-zinc-900 border-none focus-visible:ring-emerald-500"
+                    className="w-full bg-zinc-50 pl-9 pr-12 dark:bg-zinc-900 border-none focus-visible:ring-emerald-500"
                     value={query}
                     onChange={(e) => {
                         setQuery(e.target.value)
@@ -62,6 +75,10 @@ export function GlobalSearch() {
                     }}
                     onFocus={() => setIsOpen(true)}
                 />
+                <div className="absolute right-3 top-2.5 hidden sm:flex items-center gap-1 px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-[10px] text-zinc-400 pointer-events-none">
+                    <span className="font-sans">Ctrl</span>
+                    <span className="font-sans">K</span>
+                </div>
             </div>
 
             {isOpen && query.length >= 2 && (

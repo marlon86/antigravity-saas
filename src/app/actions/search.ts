@@ -9,6 +9,7 @@ export type SearchResult = {
     subtitle: string
     amount?: number
     currency?: string
+    type_tx?: 'income' | 'expense'
     date?: string
     url: string
 }
