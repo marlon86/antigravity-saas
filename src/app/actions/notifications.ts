@@ -58,7 +58,17 @@ export async function getNotifications() {
         return []
     }
 
-    return data as Notification[]
+    const testNotification: Notification = {
+        id: 'test-id',
+        user_id: user.id,
+        title: 'Teste de Notificação',
+        message: 'Se você está vendo isso, a interface de notificações está funcionando!',
+        type: 'info',
+        is_read: false,
+        created_at: new Date().toISOString()
+    }
+
+    return [testNotification, ...(data as Notification[])]
 }
 
 export async function markAsRead(id: string) {
