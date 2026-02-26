@@ -1,5 +1,6 @@
-import { Landmark, Search } from 'lucide-react';
+import { Landmark } from 'lucide-react';
 import { NotificationCenter } from './notification-center';
+import { GlobalSearch } from './global-search';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -23,14 +24,7 @@ export async function Topbar() {
                     <span>FinancaSaaS</span>
                 </Link>
 
-                <div className="relative w-full max-w-md hidden md:block">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-                    <Input
-                        type="search"
-                        placeholder="Buscar transações, bancos..."
-                        className="w-full bg-zinc-50 pl-9 dark:bg-zinc-900 border-none"
-                    />
-                </div>
+                <GlobalSearch />
             </div>
 
             <div className="flex items-center gap-2 md:gap-4">
