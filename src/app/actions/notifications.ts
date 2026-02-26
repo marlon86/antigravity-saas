@@ -43,9 +43,23 @@ export async function createNotification(title: string, message: string, type: N
 
 export async function getNotifications() {
     const supabase = await createClient()
+
+    // Test notification - MUST work even if auth fails for this test
+    const testNotification: Notification = {
+        id: 'test-id-' + Date.now(),
+        user_id: 'any',
+        title: 'Teste de Notificação (Bypass Auth)',
+        message: 'Se você está vendo isso, o problema é o getUser() na Server Action.',
+        type: 'warning',
+        is_read: false,
+        created_at: new Date().toISOString()
+    }
+
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) return []
+    if (!user) {
+        return [testNotification]
+    }
 
     const { data, error } = await supabase
         .from('notifications')
@@ -55,17 +69,7 @@ export async function getNotifications() {
 
     if (error) {
         console.error('Error fetching notifications:', error)
-        return []
-    }
-
-    const testNotification: Notification = {
-        id: 'test-id',
-        user_id: user.id,
-        title: 'Teste de Notificação',
-        message: 'Se você está vendo isso, a interface de notificações está funcionando!',
-        type: 'info',
-        is_read: false,
-        created_at: new Date().toISOString()
+        return [testNotification]
     }
 
     return [testNotification, ...(data as Notification[])]
