@@ -20,6 +20,7 @@ CREATE TABLE public.users (
 alter table public.users enable row level security;
 create policy "Users can view own data" on public.users for select using (auth.uid() = id);
 create policy "Users can update own data" on public.users for update using (auth.uid() = id);
+create policy "Users can insert own data" on public.users for insert with check (auth.uid() = id);
 
 -- Create banks table
 CREATE TABLE public.banks (
@@ -28,7 +29,9 @@ CREATE TABLE public.banks (
   bank_name text not null,
   account_type text,
   balance numeric default 0,
-  last_sync timestamp with time zone default timezone('utc'::text, now())
+  currency text default 'BRL',
+  last_sync timestamp with time zone default timezone('utc'::text, now()),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 alter table public.banks enable row level security;
 create policy "Users can manage own banks" on public.banks for all using (auth.uid() = user_id);
@@ -52,7 +55,8 @@ create policy "Users can manage own transactions" on public.transactions for all
 CREATE TABLE public.categories (
   id uuid default gen_random_uuid() primary key,
   name text not null,
-  type text not null check (type in ('income', 'expense'))
+  type text not null check (type in ('income', 'expense')),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 -- Global categories can be read by anyone authenticated
 alter table public.categories enable row level security;

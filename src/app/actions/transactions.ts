@@ -2,6 +2,19 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { createNotification } from './notifications'
+
+export type Transaction = {
+    id: string;
+    description: string;
+    amount: number;
+    type: 'income' | 'expense';
+    category: string;
+    date: string;
+    is_tax_deductible?: boolean;
+    bank_id?: string | null;
+    banks?: { bank_name: string } | null;
+}
 
 export async function getTransactions() {
     const supabase = await createClient()
@@ -22,6 +35,29 @@ export async function getTransactions() {
 
     if (error) {
         console.error('Error fetching transactions:', error)
+        throw new Error(error.message)
+    }
+
+    return data
+}
+
+export async function getBankTransactions(bankId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        throw new Error('Unauthorized')
+    }
+
+    const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('bank_id', bankId)
+        .order('date', { ascending: false })
+
+    if (error) {
+        console.error('Error fetching bank transactions:', error)
         throw new Error(error.message)
     }
 
@@ -68,6 +104,12 @@ export async function addTransaction(formData: FormData) {
     revalidatePath('/dashboard')
     revalidatePath('/dashboard/ir')
 
+    await createNotification(
+        'Nova Transação',
+        `Transação "${description}" de ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount)} foi registrada.`,
+        'success'
+    )
+
     return { success: true }
 }
 
@@ -93,6 +135,12 @@ export async function deleteTransaction(transactionId: string) {
     revalidatePath('/dashboard/extratos')
     revalidatePath('/dashboard')
     revalidatePath('/dashboard/ir')
+
+    await createNotification(
+        'Transação Removida',
+        'Uma transação foi excluída do seu extrato.',
+        'info'
+    )
 
     return { success: true }
 }
@@ -162,14 +210,23 @@ export async function uploadTransactions(formData: FormData) {
         .from('transactions')
         .insert(transactionsToInsert)
 
-    if (error) {
-        console.error('Error importing transactions:', error)
-        return { error: error.message }
+    if (bankId) {
+        await supabase
+            .from('banks')
+            .update({ last_sync: new Date().toISOString() })
+            .eq('id', bankId)
     }
 
     revalidatePath('/dashboard/extratos')
+    revalidatePath('/dashboard/bancos')
     revalidatePath('/dashboard')
     revalidatePath('/dashboard/ir')
+
+    await createNotification(
+        'Importação Concluída',
+        `${transactionsToInsert.length} transações foram importadas com sucesso via arquivo.`,
+        'success'
+    )
 
     return { success: true, count: transactionsToInsert.length }
 }

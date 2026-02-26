@@ -190,16 +190,16 @@ export default function RelatoriosClient({ initialTransactions }: { initialTrans
                                 <CardDescription>Revise os itens antes de gerar o relatório final.</CardDescription>
                             </div>
                         </div>
-                        <TabsList className="bg-transparent border-none gap-4 p-0">
+                        <TabsList className="bg-transparent border-none gap-2 sm:gap-4 p-0 flex-wrap h-auto">
                             <TabsTrigger
                                 value="deductibles"
-                                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-600 data-[state=active]:shadow-none rounded-none px-2 pb-3"
+                                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-600 data-[state=active]:shadow-none rounded-none px-2 pb-3 text-sm sm:text-base"
                             >
                                 Despesas Dedutíveis
                             </TabsTrigger>
                             <TabsTrigger
                                 value="investments"
-                                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-600 data-[state=active]:shadow-none rounded-none px-2 pb-3"
+                                className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-600 data-[state=active]:shadow-none rounded-none px-2 pb-3 text-sm sm:text-base"
                             >
                                 Bens e Direitos (Investimentos)
                             </TabsTrigger>

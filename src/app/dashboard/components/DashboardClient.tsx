@@ -107,23 +107,23 @@ export default function DashboardClient({ initialTransactions }: { initialTransa
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4 bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-sm">
+                <Card className="col-span-full lg:col-span-4 bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold">Últimas Transações</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
                             {transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5).map((transaction) => (
-                                <div key={transaction.id} className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-zinc-900 dark:text-zinc-100">{transaction.description}</p>
+                                <div key={transaction.id} className="flex items-center justify-between gap-2">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-medium text-zinc-900 dark:text-zinc-100 truncate">{transaction.description}</p>
                                         <div className="flex gap-2 text-sm text-zinc-500 dark:text-zinc-400">
                                             <span>{formatDate(transaction.date)}</span>
-                                            <span>•</span>
-                                            <span className="truncate max-w-[120px]">{transaction.category}</span>
+                                            <span className="hidden sm:inline">•</span>
+                                            <span className="truncate max-w-[120px] hidden sm:inline">{transaction.category}</span>
                                         </div>
                                     </div>
-                                    <div className={`font-semibold ${transaction.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                                    <div className={`font-semibold shrink-0 ${transaction.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}>
                                         {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                                     </div>
                                 </div>
@@ -137,21 +137,21 @@ export default function DashboardClient({ initialTransactions }: { initialTransa
                     </CardContent>
                 </Card>
 
-                <Card className="col-span-3 bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-sm">
+                <Card className="col-span-full lg:col-span-3 bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold">Despesas por Categoria</CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center">
                         {expensesByCategory.length > 0 ? (
-                            <div className="h-[250px] w-full mt-4">
+                            <div className="h-[200px] sm:h-[250px] w-full mt-4">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
                                             data={expensesByCategory}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
+                                            innerRadius={50}
+                                            outerRadius={70}
                                             paddingAngle={2}
                                             dataKey="value"
                                         >
@@ -167,15 +167,15 @@ export default function DashboardClient({ initialTransactions }: { initialTransa
                                 </ResponsiveContainer>
                             </div>
                         ) : (
-                            <div className="h-[250px] flex items-center justify-center text-zinc-500">
+                            <div className="h-[200px] flex items-center justify-center text-zinc-500">
                                 Nenhuma despesa para exibir
                             </div>
                         )}
-                        <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 w-full px-4">
+                        <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 w-full px-4 text-xs sm:text-sm">
                             {expensesByCategory.slice(0, 4).map((category, idx) => (
                                 <div key={category.name} className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                                    <span className="text-sm truncate dark:text-zinc-300">{category.name}</span>
+                                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                                    <span className="truncate dark:text-zinc-300">{category.name}</span>
                                 </div>
                             ))}
                         </div>
